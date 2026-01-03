@@ -1,0 +1,4 @@
+This is just a demo file
+The persistent inverted index will be stored in this directory in binary form.
+
+Feel free to delete this file
