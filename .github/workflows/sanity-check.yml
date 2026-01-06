@@ -51,4 +51,4 @@ jobs:
         # '|' (Pipe)        -> Sends that text into the C++ program's std::cin.
         # './build/...'     -> Runs your compiled executable.
         
-        cd build && echo "Programming" | ./SearchEngine
+        cd build && echo "Programming" | ./src/Debug/search_engine
