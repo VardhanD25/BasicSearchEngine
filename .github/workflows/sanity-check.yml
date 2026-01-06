@@ -7,7 +7,7 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build-and-check:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,32 +15,40 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # --- C++ SEARCH ENGINE PART ---
+    # 2. Setup & Install Dependencies
     - name: Install C++ Tools
       run: sudo apt-get install -y cmake build-essential
 
-    - name: Configure CMake
-      # This prepares the build folder based on your root CMakeLists.txt
-      run: cmake -S . -B build
-
-    - name: Compile Search Engine
-      # This actually runs 'make' to generate the executable
-      run: cmake --build build
-
-    # --- PYTHON CRAWLER PART ---
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    - name: Install Crawler Dependencies
+    - name: Install Python Libs
       run: |
         python -m pip install --upgrade pip
-        # If you have a requirements.txt, use it. Otherwise, install common libs.
-        if [ -f crawler/requirements.txt ]; then pip install -r crawler/requirements.txt; fi
-        # Installing common crawler libs just in case you don't have requirements.txt yet
         pip install requests beautifulsoup4
 
-    - name: Crawler Syntax Check
-      # This checks if the script is valid Python without running the infinite crawl
-      run: python -m py_compile crawler/crawler.py
+    # 3. Build the Search Engine
+    - name: Configure CMake
+      run: cmake -S . -B build
+
+    - name: Compile Search Engine
+      run: cmake --build build
+
+    # 4. Generate Real Data (The Crawler)
+    # This runs until 50 files are created, then stops automatically.
+    - name: Run Crawler (Generate Data)
+      run: python crawler/crawler.py
+
+    # 5. Run Search Engine with Input (The E2E Test)
+    - name: Test Search Query
+      run: |
+        echo "Running Search Engine with automated input..."
+        
+        # EXPLANATION OF THE MAGIC COMMAND BELOW:
+        # 'echo "Formula 1"' -> Pretends to be you typing "Formula 1" and hitting Enter.
+        # '|' (Pipe)        -> Sends that text into the C++ program's std::cin.
+        # './build/...'     -> Runs your compiled executable.
+        
+        cd build && echo "Programming" | ./SearchEngine
