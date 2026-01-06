@@ -44,15 +44,14 @@ jobs:
     # 5. Run Search Engine with Input (The E2E Test)
     - name: Test Search Query
       run: |
-        echo "Debugging: Listing build directory to find the executable..."
-        # This command prints the entire folder structure so you can see the file path
-        ls -R build
-        
         echo "----------------------------------------"
-        echo "Running Search Engine..."
+        echo "Running Search Engine from inside 'build' directory..."
         
-        # TRY THIS PATH FIRST (Standard for your structure):
-        # Note: No '.exe' and likely no 'Debug' folder.
-        # Ensure 'SearchEngine' matches the exact casing in your CMakeLists.txt (add_executable)
+        # 1. Enter the build folder
+        cd build
         
-        echo "Formula 1" | ./build/src/search_engine
+        # 2. Run the executable
+        # Since we are in 'build', the binary is at './src/search_engine'
+        # And the '../data' path in your C++ code will correctly point to project_root/data
+        
+        echo "Programming" | ./src/search_engine
